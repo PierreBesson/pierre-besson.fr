@@ -1,0 +1,28 @@
+title: Pierre Besson
+email: pierre.besson@jhipster.tech
+description: >- # this means to ignore newlines until "baseurl:"
+  Software Engineer based in Paris, JHipster developer.
+baseurl: "" # the subpath of your site, e.g. /blog
+url: "https://pierre-besson.fr" # the base hostname & protocol for your site, e.g. http://example.com
+twitter_username: pibesson
+github_username:  PierreBesson
+
+# Build settings
+markdown: kramdown
+theme: minima
+plugins:
+  - jekyll-feed
+
+google_analytics: UA-129440247-1
+
+# Exclude from processing.
+# The following items will not be processed, by default. Create a custom list
+# to override the default setting.
+# exclude:
+#   - Gemfile
+#   - Gemfile.lock
+#   - node_modules
+#   - vendor/bundle/
+#   - vendor/cache/
+#   - vendor/gems/
+#   - vendor/ruby/
