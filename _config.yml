@@ -1,7 +1,7 @@
 title: Pierre Besson
-email: pierre.besson@jhipster.tech
+email: pierre@besson.dev
 description: >- # this means to ignore newlines until "baseurl:"
-  Software Engineer based in Paris, JHipster developer.
+  Software Engineer, JHipster developer.
 baseurl: "" # the subpath of your site, e.g. /blog
 url: "https://pierre-besson.fr" # the base hostname & protocol for your site, e.g. http://example.com
 twitter_username: pibesson
