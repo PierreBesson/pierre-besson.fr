@@ -22,7 +22,7 @@ I have 5 years of experience developing and shipping software at all layers of t
 - Proficiency in using **Infrastructure as Code** (*Terraform*) and **Configuration Management** (*Ansible*).
 - Hands on experience setting up **Continuous Delivery pipelines** and  **Secrets and Identity Access Management** (*Vault*, *AWS/GCP IAM*).
 - Familiarity with using **Observability tools** (*ELK*,*Promtheus*) to monitor production environments.
-- Specific expertise in operating networks of **Blockchain Nodes** (*Ethereum*) and applications connected blockchains.
+- Specific expertise in operating networks of **Blockchain Nodes** (*Ethereum*) and applications connected to blockchains.
 
 #### **Back-end development**
 
