@@ -10,7 +10,7 @@ I gave this talk at [Sub0 2022](https://sub0.polkadot.network/) in Lisbon.
 
 # Video
 
-TBA
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/Iicj4Lfa-nU" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
 # Summary of the talk
 
