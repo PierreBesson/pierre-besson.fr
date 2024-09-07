@@ -5,6 +5,7 @@ date: '2024-09-07 12:00:00 +0100'
 tags: 'ethereum,testnet,kubernetes'
 categories: articles
 ---
+This article is a companion to the example deployment set up published on [github.com/PierreBesson/private-ethereum-testnet](https://github.com/PierreBesson/private-ethereum-testnet/).
 
 ## Introduction
 
