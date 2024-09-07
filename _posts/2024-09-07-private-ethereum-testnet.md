@@ -1,7 +1,7 @@
 ---
 layout: post
 title: Deploying A Private Post-merge Ethereum Testnet
-date: '2024-09-07 22:00:00 +0100'
+date: '2024-09-07 12:00:00 +0100'
 tags: 'ethereum,testnet,kubernetes'
 categories: articles
 ---
