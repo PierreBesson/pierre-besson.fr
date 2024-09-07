@@ -5,7 +5,7 @@ date: '2024-09-07 12:00:00 +0100'
 tags: 'ethereum,testnet,kubernetes'
 categories: articles
 ---
-This article is a companion to the example deployment set up published on [github.com/PierreBesson/private-ethereum-testnet](https://github.com/PierreBesson/private-ethereum-testnet/).
+This article is a companion to the deployment configuration published on [github.com/PierreBesson/private-ethereum-testnet](https://github.com/PierreBesson/private-ethereum-testnet/).
 
 ## Introduction
 
@@ -16,7 +16,7 @@ Running a private, fully-featured, post-merge Ethereum network can be quite comp
 - A Consensus layer validator node, eg. clients:  lighthouse, prysm
 
 The complexity is exacerbated by the fact that each client has its own configuration format. For example, some use a `genesis.json`, other a `genesis.ssz`, keys are set up in different formats, etc.
-Furthermore, you'll need to have at least 64 validator keys properly set up on your validator nodes and properly included in your genesis configuration.
+Furthermore, you'll need to have at least 64 validator keys properly set on your validator nodes and properly included in your genesis configuration.
 
 Fortunately, the Ethereum Foundation DevOps team has created the [Kurtosis ethereum-package](https://github.com/ethpandaops/ethereum-package) to simplify the creation of development networks using any of the existing clients (such as Geth, Reth, Lighthouse, Prysm, Besu, etc.). This is achieved through extensive scripting in Starlark (Python) to generate the appropriate configuration for each client and deploy it via Docker or Kubernetes.
 More details on using Kurtosis to deploy local Ethereum devnets can be found in [this EthPandaOps blog post](https://ethpandaops.io/posts/kurtosis-deep-dive/).
@@ -24,7 +24,7 @@ More details on using Kurtosis to deploy local Ethereum devnets can be found in 
 However, the main limitation of this tool is that it is not suitable for long-running and persistent networks as the setup relies on scripts and tricks (eg. copying the appropriate files inside the node containers).
 It does not produce the declarative and reusable Kubernetes configuration that would be required for setting up a persistent and maintainable testnet.
 
-To set up our testnet, we propose the following approach:
+To deploy our testnet, we propose the following approach:
 1. Run the devnet using Kurtosis to validate our setup, this can be customized with our own mnemonics and genesis settings.
 2. Extract the configuration files and keys from the working devnet.
 3. Load this devnet configurations in the target cluster using configmaps, secrets and persistent volumes.
@@ -32,7 +32,7 @@ To set up our testnet, we propose the following approach:
 
 ## Running an Ethereum devnet in Kubernetes using Kurtosis
 
-After installing [minikube](https://minikube.sigs.k8s.io/docs/start/) and [kurtosis](https://docs.kurtosis.com/quickstart) on our local machine, we set up our `~/.config/kurtosis/kurtosis-config.yaml`
+After installing [minikube](https://minikube.sigs.k8s.io/docs/start/) and [kurtosis](https://docs.kurtosis.com/quickstart) on our local machine, we edit our `~/.config/kurtosis/kurtosis-config.yaml`
 
 ```yaml
 config-version: 2
@@ -108,14 +108,12 @@ kubectl cp vc-1-reth-lighthouse:/validator-keys configuration/validator-keys
 kubectl cp cl-1-lighthouse-reth:/network-configs configuration/network-configs
 ```
 
-## Loading configuration into the target cluster
+## Load configuration into the target cluster
 
 Switch your kubectl to the target cluster and namespace, run the `./load-configuration.sh` script and wait for its completion.
 It should create, pre-populated `network-configs` and `validator-keys` volumes.
 
 ## Deploy the testnet to the target cluster
-
-In [this Github repository](https://github.com/PierreBesson/private-ethereum-testnet), we have created a minimal Ethereum testnet configuration based on  
 
 ### (Option 1) Manually deploy with kubectl
 
@@ -124,7 +122,7 @@ Clone the repo: `git clone https://github.com/PierreBesson/private-ethereum-test
 Install [kustomize](https://kubectl.docs.kubernetes.io/installation/kustomize/) (you will need the latest version of the `kustomize` CLI not the one embedded in `kubectl`) and run:
 
 ```shell
-kustomize build --enable-helm | k apply -f -
+kustomize build --enable-helm | kubectl apply -f -
 ```
 
 ### (Option 2) Run using ArgoCD
@@ -173,7 +171,7 @@ reth-bootnode-0 reth 2024-09-06T14:30:16.050036Z  INFO Block added to canonical 
 reth-bootnode-0 reth 2024-09-06T14:30:16.067500Z  INFO Canonical chain committed number=2 hash=0xd7150618d06101e7cb411a8c21e1e1aa88574e4669cea27aaba6cb149b085715 elapsed=14.25416ms
 ```
 
-## Deploy monitoring agent to collect metrics and logs
+## Deploy the monitoring agent to collect metrics and logs
 
 Additionally, you can deploy Grafana Alloy to collect metrics and logs from your cluster.
 A simple Alloy configuration (`monitoring/config.alloy`) is used to automatically scrape everything it can find and forward it to Prometheus and Loki.
@@ -209,9 +207,9 @@ Apply the monitoring configuration to the same namespace with:
 
 ```shell
 # Deploy config and creds secrets
-kustomize build --enable-helm configuration/ | k apply -f -
+kustomize build --enable-helm configuration/ | kubectl apply -f -
 # Deploy alloy
-kustomize build --enable-helm monitoring/ | k apply -f -
+kustomize build --enable-helm monitoring/ | kubectl apply -f -
 ```
 
 The Alloy agent should then start collecting and forwarding logs and metrics.
@@ -241,15 +239,16 @@ We can see in Grafana that all our nodes logs and metrics are available.
 What could be added to improve the setup.
 
 For node deployments:
-* Set up additional nodes of each types to be more resilient.
-* (If the goal is to expose the network publicly on the internet) Set up NodePort services for blockchain nodes. The proper firewalls will need to be opened on the appropriate Kubernetes node ports.
+* Add more nodes of each types to be more resilient.
+* (If the goal is to expose the network publicly on the internet) Create NodePort services for blockchain nodes. The proper firewalls will need to be opened on the appropriate Kubernetes node ports.
 
 For the monitoring:
-* Create Grafana dashboards to observe the status of the reth, prysm beacon and prysm validator nodes.
+* Create Grafana dashboards to observe the status of the reth, lighthouse beacon and lighthouse validator nodes.
 * Improve the Alloy scraping config to be based on [ServiceMonitors](https://grafana.com/docs/alloy/latest/reference/components/prometheus/prometheus.operator.servicemonitors/) to collect only the metrics we need and reduce Grafana Cloud costs.
 * Create basic alerts: volume full, block number not increasing, node down, etc.
 
 ## Conclusion
 
 Deploying a custom Ethereum testnet can seem like a very hard task due to complex beast that Ethereum has become following the Merge (separation of consensus and execution layers, validator staking, etc).
-However, by relying on the great Kurtosis automations from the EF DevOps team, we can extract customized working configurations for any available clients and reuse it in our own infrastructure with the required adaptations to manage a persistent long-running testnets.
+
+However, by leveraging the great Kurtosis automations from the EF DevOps team, we can extract customized working configurations for any available clients and reuse it in our own infrastructure with the required adaptations to manage a persistent long-running testnets.
